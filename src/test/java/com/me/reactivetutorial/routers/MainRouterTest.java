@@ -87,7 +87,7 @@ class MainRouterTest {
     @DisplayName("TEST DB REFRESH")
     void testDBRefresh()
     {
-        webTestClient.get().uri("/refresh")
+        webTestClient.options().uri("/refresh")
                 .headers(httpHeaders -> httpHeaders.setAccept(List.of(MediaType.APPLICATION_JSON)))
                 .exchange()
                 .expectStatus().isOk().expectBodyList(Product.class);

@@ -38,7 +38,7 @@ public class MainRouter {
                         GET("/products"), productLookupService::findByAnyField)
                .andRoute(GET("products/{id}"),request -> productLookupService.findById(request.pathVariable("id")))
                .andRoute(POST("products").and(accept(APPLICATION_JSON)), mainHandler::addProduct)
-               .andRoute(GET("refresh"),request ->productLookupService.refreshDB())
+               .andRoute(OPTIONS("refresh"),request ->productLookupService.refreshDB())
                ;
 
     }
