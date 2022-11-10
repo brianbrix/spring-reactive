@@ -4,6 +4,8 @@ import com.me.reactivetutorial.db.entity.Product;
 import com.me.reactivetutorial.db.repos.ProductRepo;
 import com.me.reactivetutorial.services.ProductLookupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -36,13 +38,19 @@ public class ProductLookupServiceImpl implements ProductLookupService {
     }
 
     @Override
+    public Mono<ServerResponse> findAllPaginated(PageRequest pageRequest) {
+        return null;
+    }
+
+    @Override
     public Mono<ServerResponse> refreshDB() {
         var x =productRepo.deleteAll()
                 .thenMany(
                         Flux.just("Name1:Brand1", "Name2:Brand2", "Name3:Brand3")
                                 .map(name->Product.builder().name(name.split(":")[0]).brand(name.split(":")[1]).build())
                                 .flatMap(productRepo::save)
-                ).thenMany(productRepo.findAll());
+                )
+                .thenMany(productRepo.findAll());
         return ServerResponse.ok().body(x, Product.class);
     }
 
