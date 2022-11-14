@@ -1,21 +1,16 @@
 package com.me.reactivetutorial.events;
 
 import com.me.reactivetutorial.db.entity.Product;
-import com.me.reactivetutorial.event.GenericAppEvent;
 import com.me.reactivetutorial.event.GenericPublisher;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Subscription;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.BaseSubscriber;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.function.Predicate;
 
 @Log4j2
@@ -23,13 +18,13 @@ import java.util.function.Predicate;
 public class EventTest {
     /**
      * onErrorReturn: return fallback value for entire stream (mono/flux). E.g. if there’s a flux of 10 elements, and error happens on element 3, then rest 4,5,6… won’t be executed, instead the fallback value will be considered.
-     *
+     * <p>
      * onErrorResume: return fallback value in terms on Mono/Flux for entire stream (mono/flux). E.g. if there’s a flux of 10 elements, and error happens on element 3, then rest 4,5,6… won’t be executed, instead the fallback value will be considered.
-     *
+     * <p>
      * onErrorContinue: consumes (error,data) and does NOT split it over. It considers the consumer for the error elements, and leave the downstream chain as it for good elements. E.g. if there’s a flux of 10 elements, and error happens on element 3, then all elements (1 to 10) except 3 will have normal execution, but element 3 will have a different execution as mentioned in the consumer of onErrorContinue
-     *
+     * <p>
      * doOnError: consumes error and spills it over. Stops execution for further elements in stream.
-     *
+     * <p>
      * onErrorMap: cast one error into another. Stops execution for further elements in stream.
      */
 //    @Test
