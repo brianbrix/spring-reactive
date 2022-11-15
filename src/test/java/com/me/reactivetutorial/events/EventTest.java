@@ -8,8 +8,10 @@ import org.reactivestreams.Subscription;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.concurrent.Queues;
 
 import java.util.function.Predicate;
 
@@ -117,7 +119,27 @@ public class EventTest {
         Predicate<Integer> predicate = a->a>18;
         predicate = predicate.and(b->b<100);
         System.out.println(predicate.test(106));
+        //Wrapping a synchronous blocking call/operation
+//        Mono blockingWrapper = Mono.fromCallable(() -> {// fromCallable ensures that we lazily call the operation only after a subscription occurs
+//             /* make a remote synchronous call */
+//
+//        });
+//        blockingWrapper = blockingWrapper.subscribeOn(Schedulers.boundedElastic());// This ensures that when the subscription occurs the process is run on a dedicated thread
+        //SInks can be used to emit results when making API calls. For instance if a have a list of request that I need to make in a for Loop
+        Sinks.Many<Integer> sinks = Sinks.many().multicast().onBackpressureBuffer(Queues.SMALL_BUFFER_SIZE,false);
+        //the boolean value above removes the autoCancel setting which is by default set to true
+        //this allow other subscribers to continue despite having one cancel/dispose
+        var flx = sinks.asFlux().log();
+        flx.subscribe(x-> System.out.println(x*8));
+        sinks.emitNext(1, Sinks.EmitFailureHandler.FAIL_FAST);
+        sinks.emitNext(2, Sinks.EmitFailureHandler.FAIL_FAST);
 
+
+        flx.subscribe(x-> System.out.println(x*5));
+
+        sinks.emitNext(3, Sinks.EmitFailureHandler.FAIL_FAST);
+        sinks.emitNext(4, Sinks.EmitFailureHandler.FAIL_FAST);
+        flx.subscribe(x-> System.out.println(x*6));
     }
 
 
